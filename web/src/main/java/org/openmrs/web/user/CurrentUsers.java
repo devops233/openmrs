@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -110,4 +111,29 @@ public class CurrentUsers {
 		return userNames;
 	}
 	
+	/**
+	 * Removes a given user from the list of current users.
+	 * 
+	 * @param username
+	 * @param httpSession
+	 */
+	public static void removeUser(String username, HttpSession httpSession) {
+		Map<String, String> currentUsers = getCurrentUsers(httpSession);
+		for (Entry<String, String> entry : currentUsers.entrySet()) {
+			if (entry.getValue().equals(username)) {
+				currentUsers.remove(entry.getKey());
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * Gets the user name logged in a given session
+	 * 
+	 * @param httpSession the session
+	 * @return the user name
+	 */
+	public static String getUser(HttpSession httpSession) {
+		return getCurrentUsers(httpSession).get(httpSession.getId());
+	}
 }

@@ -10,7 +10,6 @@
 package org.openmrs.web.filter;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -25,6 +24,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.user.CurrentUsers;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -91,7 +91,15 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 			// can identify sessions easier
 			User user = userContext.getAuthenticatedUser();
 			if (user != null) {
-				httpSession.setAttribute("username", user.getUsername());
+				String username = CurrentUsers.getUser(httpSession);
+				if (!user.getUsername().equals(username)) {
+					Context.logout();
+					userContext = new UserContext();
+					httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
+				}
+				else {
+					httpSession.setAttribute("username", user.getUsername());
+				}
 			}
 		}
 		

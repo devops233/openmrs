@@ -14,6 +14,7 @@ import static org.openmrs.web.WebConstants.GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -150,6 +151,11 @@ public class LoginServlet extends HttpServlet {
 					// In case the user has no preferences, make sure that the context has some locale set
 					if (Context.getLocale() == null) {
 						Context.setLocale(LocaleUtility.getDefaultLocale());
+					}
+					
+					List<String> usernames = CurrentUsers.getCurrentUsernames(httpSession);
+					if (usernames.contains(user.getUsername())) {
+						CurrentUsers.removeUser(user.getUsername(), httpSession);
 					}
 					
 					CurrentUsers.addUser(httpSession, user);
